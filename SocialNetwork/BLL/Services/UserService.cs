@@ -118,13 +118,20 @@ namespace SocialNetwork.BLL.Services
                 throw new Exception();
         }
 
+        public IEnumerable<User> GetFriendsByUserId(int userId)
+        {
+            return friendRepository.FindAllByUserId(userId)
+                    .Select(friendsEntity => FindById(friendsEntity.friend_id));
+        }
+
         private User ConstructUserModel(UserEntity userEntity)
         {
             var incomingMessages = messageService.GetIncomingMessagesByUserId(userEntity.id);
 
             var outgoingMessages = messageService.GetOutcomingMessagesByUserId(userEntity.id);
 
-            
+            var friends = GetFriendsByUserId(userEntity.id);
+
             return new User(userEntity.id,
                           userEntity.firstname,
                           userEntity.lastname,
@@ -134,7 +141,8 @@ namespace SocialNetwork.BLL.Services
                           userEntity.favorite_movie,
                           userEntity.favorite_book,
                           incomingMessages,
-                          outgoingMessages
+                          outgoingMessages,
+                          friends
                           );
         }
     }
