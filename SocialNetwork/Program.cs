@@ -40,6 +40,7 @@ namespace SocialNetwork
             userIncomingMessageView = new UserIncomingMessageView();
             userOutcomingMessageView = new UserOutcomingMessageView();
             addFriendView = new AddFriendView(userService);
+            userFriendView = new UserFriendDataView();
 
             while (true)
             {
