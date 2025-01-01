@@ -13,9 +13,12 @@ namespace SocialNetwork.BLL.Services
     {
         MessageService messageService;
         IUserRepository userRepository;
+        IFriendRepository friendRepository;
+
         public UserService()
         {
             userRepository = new UserRepository();
+            friendRepository = new FriendRepository();
             messageService = new MessageService();
         }
 
@@ -100,12 +103,28 @@ namespace SocialNetwork.BLL.Services
                 throw new Exception();
         }
 
+        public void AddFriend(UserAddFriendData userAddFriendData)
+        {
+            var findUserEntity = userRepository.FindByEmail(userAddFriendData.FriendEmail);
+            if (findUserEntity == null) throw new UserNotFoundException();
+
+            var friendEntity = new FriendEntity()
+            {
+                user_id = userAddFriendData.UserId,
+                friend_id = findUserEntity.id
+            };
+
+            if (friendRepository.Create(friendEntity) == 0)
+                throw new Exception();
+        }
+
         private User ConstructUserModel(UserEntity userEntity)
         {
             var incomingMessages = messageService.GetIncomingMessagesByUserId(userEntity.id);
 
             var outgoingMessages = messageService.GetOutcomingMessagesByUserId(userEntity.id);
 
+            
             return new User(userEntity.id,
                           userEntity.firstname,
                           userEntity.lastname,
